@@ -47,21 +47,17 @@ def decode_instruction(instr):
     elif itype == "UJ":
         imm_str, bits = instr[0] + instr[12:20] + instr[11] + instr[1:11] + "0", 21
     elif itype == "S":
-        # TODO: YOUR TASK
-        # Slice the 'instr' string to build the S-type immediate.
-        # Hint: Look at bits [11:5] and [4:0] on the Green Card.
-        imm_str, bits = "000000000000", 12 # Replace this dummy string
+        imm_str, bits = instr[0:7] + instr[20:25], 12
     elif itype == "SB":
-        # TODO: YOUR TASK
-        # Slice the 'instr' string to build the SB-type immediate.
-        # Hint: It is shuffled! Look at bits [12], [10:5], [4:1], [11].
-        imm_str, bits = "0000000000000", 13 # Replace this dummy string
+        imm_str, bits = instr[0] + instr[1:7] + instr[20:24] + instr[24] + "0", 13
 
     # 4. Two's Complement logic for immediate values
     if imm_str:
         imm = int(imm_str, 2)
         if imm_str[0] == '1': 
             imm -= (1 << bits)
+        if itype == "SB":
+            imm = imm >> 1  # Remove implicit 0 from branch offset encoding
         if op in ["slli", "srli", "srai"]: 
             imm &= 0x1F # Shifts only use the lower 5 bits
 
